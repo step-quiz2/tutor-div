@@ -26,15 +26,17 @@ def new_session() -> dict:
     """Estat inicial. El tutor obre amb la presentació del Capítol 1 +
     la primera pregunta (generat per Python, sense crida a l'IA)."""
     cap = problems.CAPITOLS[0]
+    obertura = missatge_obertura_capitol(cap)
     return {
         "started_at": time.time(),
         "cap_idx": 0,                 # índex del capítol actual (0-based)
         "pas_idx": 0,                 # índex del pas dins del capítol (0-based)
         "finished": False,
         # transcript del CAPÍTOL actual (es reinicia en canviar de capítol)
-        "transcript": [{"role": "tutor", "content": missatge_obertura_capitol(cap)}],
-        # historial complet per mostrar a la UI (tots els capítols)
-        "display": [{"role": "tutor", "content": missatge_obertura_capitol(cap)}],
+        "transcript": [{"role": "tutor", "content": obertura}],
+        # historial complet per mostrar a la UI (tots els capítols).
+        # source: "py" = mode determinista (Python) · "ai" = mode heurístic (IA)
+        "display": [{"role": "tutor", "content": obertura, "source": "py"}],
         "turn_count": 0,
         "history": [],                # rastre per torn (per al professor)
         "last_raw_output": None,
@@ -88,7 +90,7 @@ def apply_action(state: dict, action: str) -> str:
         obertura = missatge_obertura_capitol(nou_cap)
         # Nou context conversacional per al capítol nou.
         state["transcript"] = [{"role": "tutor", "content": obertura}]
-        state["display"].append({"role": "tutor", "content": obertura})
+        state["display"].append({"role": "tutor", "content": obertura, "source": "py"})
         return "seguent_capitol"
 
     state["finished"] = True
@@ -97,25 +99,38 @@ def apply_action(state: dict, action: str) -> str:
 
 def add_student(state: dict, text: str) -> None:
     state["transcript"].append({"role": "student", "content": text})
-    state["display"].append({"role": "student", "content": text})
+    state["display"].append({"role": "student", "content": text, "source": "student"})
 
 
-def add_tutor(state: dict, text: str) -> None:
+def add_tutor(state: dict, text: str, source: str = "ai") -> None:
+    """Afegeix un torn del tutor.
+
+    source = "ai" → resposta heurística generada per la IA.
+    source = "py" → text determinista generat per Python (obertures,
+                    preguntes canòniques, missatge final, mode de reserva).
+    """
     state["transcript"].append({"role": "tutor", "content": text})
-    state["display"].append({"role": "tutor", "content": text})
+    state["display"].append({"role": "tutor", "content": text, "source": source})
 
 
 def enrich_last_tutor(state: dict, extra: str) -> None:
-    """Afegeix text extra al darrer missatge del tutor, tant al transcript
-    del capítol com al display. S'usa per injectar la pregunta canònica del
-    pas nou quan el model avança (seguent_pas), garantint que l'enunciat
-    autoritzat arriba a l'alumne fins i tot si el model l'oblida.
+    """Posa la pregunta canònica del pas nou quan el model avança.
+
+    - Al **transcript** del capítol: l'enganxem al darrer torn del tutor,
+      perquè el model vegi en el seu context la pregunta que toca respondre
+      (i no es trenqui l'alternança tutor/student).
+    - Al **display**: la posem com a bombolla pròpia i **determinista** (py),
+      perquè quedi clar que l'enunciat el posa Python, no la IA. Així la
+      felicitació (heurística) i la pregunta (determinista) es veuen amb
+      colors diferents.
     """
-    for lst in (state["transcript"], state["display"]):
-        for m in reversed(lst):
-            if m["role"] == "tutor":
-                m["content"] += f"\n\n---\n\n{extra}"
-                break
+    # Transcript: enganxa al darrer tutor (manté l'alternança).
+    for m in reversed(state["transcript"]):
+        if m["role"] == "tutor":
+            m["content"] += f"\n\n{extra}"
+            break
+    # Display: bombolla determinista separada.
+    state["display"].append({"role": "tutor", "content": extra, "source": "py"})
 
 
 def pop_last_student(state: dict) -> None:
@@ -130,25 +145,24 @@ def pop_last_student(state: dict) -> None:
 # ───────────────────────── generació de textos ────────────────────────── #
 
 def missatge_obertura_capitol(cap: dict) -> str:
-    """Presentació d'un capítol + primera pregunta (la genera Python)."""
+    """Presentació curta d'un capítol + primera pregunta (la genera Python)."""
     primer = cap["passos"][0]
     return (
         f"## {cap['emoji']} Capítol {cap['id']} · {cap['titol']}\n\n"
-        f"{cap['introduccio']}\n\n---\n\n"
+        f"{cap['introduccio']}\n\n"
         f"**Pas {primer['id']}.** {primer['pregunta']}"
     )
 
 
 MISSATGE_BENVINGUDA = (
-    "Hola! 👋 Sóc en **Pitàgoras**, el teu tutor de mates.\n\n"
-    "Avui farem 5 capítols sobre **divisibilitat**. "
-    "Aprendrem múltiples, divisors i nombres primers.\n\n"
-    "Si t'equivoques, no passa res! Estic aquí per ajudar-te. "
-    "Prem **Comença** quan vulguis! 🚀"
+    "Hola, Aran! 👋 Sóc en **Pitàgoras**.\n\n"
+    "Avui aprendrem **múltiples, divisors i primers**.\n\n"
+    "Anirem a poc a poc. Si t'equivoques, no passa res!\n\n"
+    "Prem **Comença** quan vulguis. 🚀"
 )
 
 MISSATGE_FINAL = (
-    "🎉 **Molt bé! Ho has fet!** Has acabat els 5 capítols.\n\n"
-    "Ja saps què és un **múltiple**, un **divisor** i un **nombre primer**. "
-    "Estic molt content de tu. Bona feina! 🌟"
+    "🎉 **Molt bé, Aran!** Ho has aconseguit.\n\n"
+    "Ja saps què és un **múltiple**, un **divisor** i un **primer**.\n\n"
+    "Bona feina! 🌟"
 )

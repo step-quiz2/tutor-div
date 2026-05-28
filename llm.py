@@ -220,8 +220,9 @@ def _fallback_turn(capitol, current_position, transcript) -> dict:
     if "(L'alumne demana una pista)" in ultim_student:
         pistes = pas.get("pistes", [])
         pista = pistes[0] if pistes else "Comencem pel primer càlcul, amb calma."
-        return {"reply": f"Una pista: {pista}", "action": "stay",
-                "n_api_calls": 0, "raw_output": "", "control_parse_ok": True}
+        return {"reply": f"Pista: {pista}", "action": "stay",
+                "n_api_calls": 0, "mode": "py", "raw_output": "",
+                "control_parse_ok": True}
 
     resp = _normalitza(ultim_student)
     claus = [_normalitza(c) for c in pas.get("conceptes_clau", [])]
@@ -233,19 +234,19 @@ def _fallback_turn(capitol, current_position, transcript) -> dict:
     prou = encerts >= max(1, (len(claus) + 1) // 2)
 
     if prou:
-        if pas_num < len(passos):
-            seg = passos[pas_num]
-            reply = f"Molt bé! 🎉 Ho has entès. Passem al següent:\n\n{seg['pregunta']}"
-        else:
-            reply = "Molt bé! 🎉 Has tancat aquest capítol."
+        # NOTA: no hi posem la pregunta del pas següent. Quan l'acció és
+        # "advance", tutor.enrich_last_tutor ja la mostra com a bombolla
+        # determinista pròpia. Aquí només felicitem (curt).
+        reply = "Molt bé! 🎉 Ho has entès."
         return {"reply": reply, "action": "advance",
-                "n_api_calls": 0, "raw_output": "", "control_parse_ok": True}
+                "n_api_calls": 0, "mode": "py", "raw_output": "",
+                "control_parse_ok": True}
 
     pistes = pas.get("pistes", [])
-    pista = pistes[0] if pistes else "Torna-ho a provar pas a pas."
-    return {"reply": f"Encara no hi som del tot. Una pista: {pista}",
-            "action": "stay", "n_api_calls": 0, "raw_output": "",
-            "control_parse_ok": True}
+    pista = pistes[0] if pistes else "Torna-ho a provar a poc a poc."
+    return {"reply": f"Encara no. Pista: {pista}",
+            "action": "stay", "n_api_calls": 0, "mode": "py",
+            "raw_output": "", "control_parse_ok": True}
 
 
 # ──────────────────────── constructor de contents ─────────────────────── #
@@ -332,6 +333,7 @@ def tutor_turn(capitol: dict, current_position: dict,
         "reply": reply,
         "action": control["action"],
         "n_api_calls": 1,
+        "mode": "ai",
         "raw_output": raw,
         "control_parse_ok": parse_ok,
     }

@@ -37,6 +37,19 @@ st.markdown(
              overflow:hidden; margin:4px 0 10px 0; }
     .barra > div { background:linear-gradient(90deg,#4f8df9,#6fc3a0); height:100%; }
     .petit { color:#6b7280; font-size:1.02rem; }
+
+    /* ── Codi de colors: mode determinista (Python) vs heurístic (IA) ── */
+    .mode-badge {
+        display:inline-block; font-size:.82rem; font-weight:700;
+        padding:2px 10px; border-radius:999px; margin-bottom:8px;
+        letter-spacing:.02em;
+    }
+    .mode-ai { background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; }
+    .mode-py { background:#d1fae5; color:#065f46; border:1px solid #6ee7b7; }
+    /* Vora esquerra de color a la bombolla segons el mode */
+    .stChatMessage:has(.mode-ai) { border-left:5px solid #8b5cf6; }
+    .stChatMessage:has(.mode-py) { border-left:5px solid #10b981; }
+    .llegenda { display:flex; gap:14px; flex-wrap:wrap; margin:2px 0 6px 0; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -66,6 +79,18 @@ with st.sidebar:
             "senzilla, sense IA). Defineix la variable d'entorn i recarrega "
             "per a l'experiència completa."
         )
+
+    st.markdown(
+        '<div class="llegenda">'
+        '<span class="mode-badge mode-ai">🤖 IA · heurístic</span>'
+        '<span class="mode-badge mode-py">🐍 Python · determinista</span>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    st.caption(
+        "Les bombolles **morades** les escriu la IA. "
+        "Les **verdes** (enunciats, pistes de reserva, obertures) les genera Python."
+    )
 
     state = st.session_state.state
     if state is not None:
@@ -125,10 +150,20 @@ state = st.session_state.state
 # ─────────────────────────── historial del xat ────────────────────────── #
 
 for m in state["display"]:
-    avatar = "🧑‍🏫" if m["role"] == "tutor" else "🧑‍🎓"
-    role = "assistant" if m["role"] == "tutor" else "user"
-    with st.chat_message(role, avatar=avatar):
-        st.markdown(m["content"])
+    if m["role"] == "tutor":
+        source = m.get("source", "ai")
+        if source == "py":
+            avatar, role = "🐍", "assistant"
+            badge = '<span class="mode-badge mode-py">🐍 Python · determinista</span>'
+        else:
+            avatar, role = "🧑‍🏫", "assistant"
+            badge = '<span class="mode-badge mode-ai">🤖 IA · heurístic</span>'
+        with st.chat_message(role, avatar=avatar):
+            st.markdown(badge, unsafe_allow_html=True)
+            st.markdown(m["content"])
+    else:
+        with st.chat_message("user", avatar="🧑‍🎓"):
+            st.markdown(m["content"])
 
 
 # ─────────────────────────── processament d'un torn ───────────────────── #
@@ -154,7 +189,9 @@ def processa(text_alumne: str):
         )
         return
 
-    tutor.add_tutor(state, result["reply"])  # ABANS d'aplicar l'acció
+    # font determinista (py) si ha respost el mode de reserva; si no, IA (ai).
+    font = "py" if result.get("mode") == "py" or result["n_api_calls"] == 0 else "ai"
+    tutor.add_tutor(state, result["reply"], source=font)  # ABANS d'aplicar l'acció
     state["turn_count"] += 1
     state["last_raw_output"] = result["raw_output"]
     pos_abans = tutor.position_dict(state)
@@ -162,15 +199,14 @@ def processa(text_alumne: str):
     trans = tutor.apply_action(state, result["action"])
 
     if trans == "seguent_pas":
-        # El model pot oblidar incloure la pregunta del pas nou en el seu reply.
-        # Python garanteix que l'enunciat canònic arriba sempre a l'alumne,
-        # igual que fa a l'obertura de capítol i al mode de reserva.
+        # El model (o el mode de reserva) NO inclou la pregunta del pas nou:
+        # Python la mostra com a bombolla determinista pròpia, sempre.
         pas = tutor.pas_actual(state)
         q_canonica = f"**Pas {pas['id']}.** {pas['pregunta']}"
         tutor.enrich_last_tutor(state, q_canonica)
 
     if trans == "fi":
-        tutor.add_tutor(state, tutor.MISSATGE_FINAL)
+        tutor.add_tutor(state, tutor.MISSATGE_FINAL, source="py")
 
     state["history"].append({
         "position_before": pos_abans,

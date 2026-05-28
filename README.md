@@ -25,8 +25,8 @@ problems.py            → contingut: 5 capítols, passos, respostes de referèn
 prompts/tutor_system_v2.md → system prompt (plantilla amb placeholders {{...}})
 llm.py                 → tutor_turn(capitol, posició, transcript) → reply + acció
 tutor.py               → màquina d'estats (capítol/pas, transcript, transicions)
-app.py                 → interfície Streamlit (xat, botons Pista/Acabar, progrés)
-test_tutor.py          → 72 comprovacions, sense clau d'API (stub del model)
+app.py                 → interfície Streamlit (xat amb codi de colors, botons Pista/Acabar, progrés)
+test_tutor.py          → comprovacions, sense clau d'API (stub del model)
 ```
 
 Com funciona un torn:
@@ -45,6 +45,25 @@ Per què aquest disseny: l'avaluació torn-a-torn aïllada (la v1) rebutjava
 respostes correctes dites amb el vocabulari que la pròpia conversa havia
 construït. Jutjar la conversa sencera ho evita. (Veure els `CHANGELOG` de
 `tutor-ic` per al registre d'aquest canvi en el projecte original.)
+
+## Disseny pensat per a l'Aran (alumne amb dificultats)
+
+El diàleg està afinat per a un alumne de 12 anys que encara confon
+**múltiple** i **divisor**, no veu que els múltiples són **infinits**, i
+confon **imparell** amb **primer**. Per això:
+
+- Cada **pas** demana **una sola cosa**, amb frases molt curtes.
+- El tutor (IA i mode de reserva) **mai fa dues preguntes** en un missatge.
+- En avançar, el tutor només felicita; **Python** mostra l'enunciat del pas
+  següent en una bombolla a part.
+
+### Codi de colors: determinista vs heurístic
+
+A la interfície es distingeix d'un cop d'ull qui parla:
+
+- 🐍 **verd · Python (determinista):** obertures de capítol, enunciats dels
+  passos, pistes del mode de reserva i missatge final.
+- 🤖 **morat · IA (heurístic):** les respostes generades pel model (Gemini).
 
 ## Instal·lació
 
@@ -70,7 +89,7 @@ Mode debug: afegeix `?debug=1` a la URL per veure l'estat intern, l'últim
 ## Tests
 
 ```bash
-python3 test_tutor.py   # 72 comprovacions, ~instantani, sense clau d'API
+python3 test_tutor.py   # ~instantani, sense clau d'API
 ```
 
 ## Notes de robustesa (apreses dels projectes germans)
