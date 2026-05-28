@@ -219,7 +219,7 @@ if not state["finished"]:
         acabar = st.button("🚪 Acabar", use_container_width=True)
 
     if demana_pista:
-        with st.spinner("En Pitàgoras prepara una pista…"):
+        with st.spinner("En Pitàgores prepara una pista…"):
             processa(tutor.PISTA_MARKER)
         st.rerun()
 
@@ -229,7 +229,7 @@ if not state["finished"]:
 
     entrada = st.chat_input("Escriu la teva resposta aquí…")
     if entrada:
-        with st.spinner("En Pitàgoras hi està pensant…"):
+        with st.spinner("En Pitàgores hi està pensant…"):
             processa(entrada)
         st.rerun()
 else:

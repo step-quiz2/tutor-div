@@ -155,7 +155,7 @@ def missatge_obertura_capitol(cap: dict) -> str:
 
 
 MISSATGE_BENVINGUDA = (
-    "Hola, Aran! 👋 Sóc en **Pitàgoras**.\n\n"
+    "Hola, Aran! 👋 Sóc en **Pitàgores**.\n\n"
     "Avui aprendrem **múltiples, divisors i primers**.\n\n"
     "Anirem a poc a poc. Si t'equivoques, no passa res!\n\n"
     "Prem **Comença** quan vulguis. 🚀"
