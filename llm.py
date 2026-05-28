@@ -89,26 +89,49 @@ def ia_disponible() -> bool:
 
 # ─────────────────────── system prompt (cache per capítol) ─────────────── #
 
-_prompt_cache: dict[int, str] = {}
+_prompt_cache: dict[tuple, str] = {}
+
+
+def _render_step(p: dict) -> str:
+    pistes = " · ".join(p.get("pistes", [])) or "(cap)"
+    return (
+        f"**Pregunta actual:** {p['pregunta']}\n"
+        f"- Comprensió esperada (INTERNA, no la dictis): {p['resposta_ref']}\n"
+        f"- Conceptes clau: {', '.join(p.get('conceptes_clau', []))}\n"
+        f"- Pistes que pots reformular: {pistes}"
+    )
 
 
 def _render_steps(capitol: dict) -> str:
-    blocs = []
-    for p in capitol["passos"]:
-        pistes = " · ".join(p.get("pistes", [])) or "(cap)"
-        blocs.append(
-            f"**PAS {p['id']}.** {p['pregunta']}\n"
-            f"- Comprensió esperada (INTERNA, no la dictis): {p['resposta_ref']}\n"
-            f"- Conceptes clau: {', '.join(p.get('conceptes_clau', []))}\n"
-            f"- Pistes que pots reformular: {pistes}"
-        )
-    return "\n\n".join(blocs)
+    return "\n\n".join(_render_step(p) for p in capitol["passos"])
 
 
-def _load_system_prompt(capitol: dict, cap_total: int) -> str:
+def _load_system_prompt(capitol: dict, cap_total: int,
+                        current_position: dict | None = None) -> str:
     cid = capitol["id"]
-    if cid in _prompt_cache:
-        return _prompt_cache[cid]
+    passos = capitol["passos"]
+
+    # Posició actual: si la sabem, NOMÉS mostrem la pregunta actual al model
+    # (així no pot avançar-se i fer una pregunta de més endavant).
+    pas_idx = None
+    if current_position and current_position.get("pas"):
+        p = current_position["pas"]
+        if 1 <= p <= len(passos):
+            pas_idx = p - 1
+
+    key = (cid, pas_idx)
+    if key in _prompt_cache:
+        return _prompt_cache[key]
+
+    if pas_idx is not None:
+        steps_str = _render_step(passos[pas_idx])
+        pos_str = (
+            f"Ara treballes la **pregunta {pas_idx + 1} de {len(passos)}** "
+            f"d'aquest capítol."
+        )
+    else:
+        steps_str = _render_steps(capitol)
+        pos_str = f"Aquest capítol té {len(passos)} preguntes."
 
     template = (PROMPTS_DIR / f"tutor_system_{PROMPT_VERSION}.md").read_text(
         encoding="utf-8"
@@ -118,8 +141,8 @@ def _load_system_prompt(capitol: dict, cap_total: int) -> str:
         "{{CAP_TOTAL}}": str(cap_total),
         "{{CAP_TITOL}}": capitol["titol"],
         "{{CAP_INTRO}}": capitol["introduccio"],
-        "{{N_PASSOS}}": str(len(capitol["passos"])),
-        "{{STEPS}}": _render_steps(capitol),
+        "{{POSICIO}}": pos_str,
+        "{{STEPS}}": steps_str,
     }
     for k, v in replacements.items():
         template = template.replace(k, v)
@@ -128,7 +151,7 @@ def _load_system_prompt(capitol: dict, cap_total: int) -> str:
     if unresolved:
         raise RuntimeError(f"Placeholders sense resoldre: {unresolved}")
 
-    _prompt_cache[cid] = template
+    _prompt_cache[key] = template
     return template
 
 
@@ -304,7 +327,7 @@ def tutor_turn(capitol: dict, current_position: dict,
     if not ia_disponible():
         return _fallback_turn(capitol, current_position, transcript)
 
-    system_instruction = _load_system_prompt(capitol, cap_total)
+    system_instruction = _load_system_prompt(capitol, cap_total, current_position)
     marker = _format_position_marker(
         current_position, cap_total, len(capitol["passos"])
     )
