@@ -203,7 +203,7 @@ def test_enrich_last_tutor():
     check(trans == "seguent_pas", "primera transició és seguent_pas")
 
     pas = tutor.pas_actual(state)
-    q_canonica = f"**Pas {pas['id']}.** {pas['pregunta']}"
+    q_canonica = f"**PREGUNTA.** {pas['pregunta']}"
     tutor.enrich_last_tutor(state, q_canonica)
 
     # La pregunta canònica ha de ser al darrer missatge de tutor de display

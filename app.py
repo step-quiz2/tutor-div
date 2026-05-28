@@ -68,9 +68,6 @@ def reinicia():
 # ─────────────────────────────── sidebar ──────────────────────────────── #
 
 with st.sidebar:
-    st.header("➗ Tutor de Divisibilitat")
-    st.caption("Per a 1r d'ESO · en català")
-
     if llm.ia_disponible():
         st.success(f"IA connectada ✓ ({llm.MODEL})")
     else:
@@ -82,14 +79,10 @@ with st.sidebar:
 
     st.markdown(
         '<div class="llegenda">'
-        '<span class="mode-badge mode-ai">🤖 IA · heurístic</span>'
-        '<span class="mode-badge mode-py">🐍 Python · determinista</span>'
+        '<span class="mode-badge mode-ai">🤖 IA</span>'
+        '<span class="mode-badge mode-py">🐍 Python</span>'
         '</div>',
         unsafe_allow_html=True,
-    )
-    st.caption(
-        "Les bombolles **morades** les escriu la IA. "
-        "Les **verdes** (enunciats, pistes de reserva, obertures) les genera Python."
     )
 
     state = st.session_state.state
@@ -104,7 +97,7 @@ with st.sidebar:
             frac = (state["cap_idx"] + (pas_num - 1) / total_passos) / tutor.total_capitols()
             st.markdown(
                 f"**Capítol {state['cap_idx']+1}/{tutor.total_capitols()}** · "
-                f"pas {pas_num}/{total_passos}"
+                f"pregunta {pas_num}/{total_passos}"
             )
             st.markdown(
                 f'<div class="barra"><div style="width:{frac*100:.0f}%"></div></div>',
@@ -132,7 +125,6 @@ with st.sidebar:
 # ─────────────────────────────── capçalera ────────────────────────────── #
 
 st.title("Tutor de Divisibilitat")
-st.caption("Aprèn múltiples, divisors i nombres primers pensant pas a pas.")
 
 
 # ─────────────────────────── pantalla d'inici ─────────────────────────── #
@@ -154,10 +146,10 @@ for m in state["display"]:
         source = m.get("source", "ai")
         if source == "py":
             avatar, role = "🐍", "assistant"
-            badge = '<span class="mode-badge mode-py">🐍 Python · determinista</span>'
+            badge = '<span class="mode-badge mode-py">🐍 Python</span>'
         else:
             avatar, role = "🧑‍🏫", "assistant"
-            badge = '<span class="mode-badge mode-ai">🤖 IA · heurístic</span>'
+            badge = '<span class="mode-badge mode-ai">🤖 IA</span>'
         with st.chat_message(role, avatar=avatar):
             st.markdown(badge, unsafe_allow_html=True)
             st.markdown(m["content"])
@@ -202,7 +194,7 @@ def processa(text_alumne: str):
         # El model (o el mode de reserva) NO inclou la pregunta del pas nou:
         # Python la mostra com a bombolla determinista pròpia, sempre.
         pas = tutor.pas_actual(state)
-        q_canonica = f"**Pas {pas['id']}.** {pas['pregunta']}"
+        q_canonica = f"**PREGUNTA.** {pas['pregunta']}"
         tutor.enrich_last_tutor(state, q_canonica)
 
     if trans == "fi":

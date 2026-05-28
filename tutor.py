@@ -150,7 +150,7 @@ def missatge_obertura_capitol(cap: dict) -> str:
     return (
         f"## {cap['emoji']} Capítol {cap['id']} · {cap['titol']}\n\n"
         f"{cap['introduccio']}\n\n"
-        f"**Pas {primer['id']}.** {primer['pregunta']}"
+        f"**PREGUNTA.** {primer['pregunta']}"
     )
 
 
