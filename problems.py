@@ -20,18 +20,18 @@ CAPITOLS = [
     # ------------------------------------------------------------------ #
     {
         "id": 1,
-        "titol": "Múltiples: 12 de 3, o 3 de 12?",
+        "titol": "Múltiples",
         "emoji": "✖️",
         "introduccio": (
-            "Avui aprendrem **què és un múltiple**. "
-            "Ho farem amb dos nombres: el 12 i el 3."
+            "Avui repassem què vol dir **ser un múltiple**. "
+            "Practiquem amb els nombres 12 i 3."
         ),
         "passos": [
             {
                 "id": "1.1",
                 "pregunta": (
-                    "Fes les dues divisions: **12 ÷ 3** i **3 ÷ 12**. "
-                    "Quina surt exacta (sense decimals)? Quina no?"
+                    "Fes aquestes divisions: **12 ÷ 3** i **3 ÷ 12**. "
+                    "Quina de les divisions és exacta?"
                 ),
                 "descripcio_pas": "Comprovar quina divisió és exacta.",
                 "resposta_ref": (
@@ -40,15 +40,14 @@ CAPITOLS = [
                 ),
                 "conceptes_clau": ["12÷3", "exacta", "no exacta", "3÷12"],
                 "pistes": [
-                    "Pensa: 12 caramels en 3 bosses iguals. Quants toca a cada bossa?",
-                    "12÷3=4 (cap sobra). Ara 3÷12: tens 3 coses i les vols repartir en 12 grups. Surt un nombre enter?",
+                    "Pensa: repartim 12 caramels entre 3 persones, a parts iguals. Quants toca a cada bossa?",
+                    "En canvi, si vols repartir 3 euros entre 12 perones, creus que surt un nombre enter?",
                 ],
             },
             {
                 "id": "1.2",
                 "pregunta": (
-                    "Regla: *A és múltiple de B quan A÷B és exacta.* "
-                    "Aleshores, **12 és múltiple de 3, o 3 és múltiple de 12?** "
+                    "Tu diries que **12 és múltiple de 3, o bé que 3 és múltiple de 12?** "
                     "Per què?"
                 ),
                 "descripcio_pas": "Aplicar la definició de múltiple.",
