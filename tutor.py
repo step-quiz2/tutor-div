@@ -140,17 +140,15 @@ def missatge_obertura_capitol(cap: dict) -> str:
 
 
 MISSATGE_BENVINGUDA = (
-    "Hola! 👋 Sóc en **Pitàgoras**, el teu tutor de matemàtiques.\n\n"
-    "Avui explorarem la **divisibilitat** en 5 capítols: múltiples, divisors, "
-    "una propietat sorprenent del 6, i els misteriosos **nombres primers**.\n\n"
-    "No et preocupis si t'equivoques: per a això hi sóc jo, per ajudar-te a "
-    "pensar pas a pas. Quan vulguis, prem **Comença**! 🚀"
+    "Hola! 👋 Sóc en **Pitàgoras**, el teu tutor de mates.\n\n"
+    "Avui farem 5 capítols sobre **divisibilitat**. "
+    "Aprendrem múltiples, divisors i nombres primers.\n\n"
+    "Si t'equivoques, no passa res! Estic aquí per ajudar-te. "
+    "Prem **Comença** quan vulguis! 🚀"
 )
 
 MISSATGE_FINAL = (
-    "🎉 **Ho has aconseguit!** Has completat els 5 capítols sobre divisibilitat.\n\n"
-    "Ara saps què és un **múltiple**, què és un **divisor**, per què els "
-    "múltiples són infinits però els divisors no, quan un nombre divisible per "
-    "2 i per 3 ho és també per 6, i què fa especials els **nombres primers**.\n\n"
-    "Estic molt orgullós de tu. Bona feina! 🌟"
+    "🎉 **Molt bé! Ho has fet!** Has acabat els 5 capítols.\n\n"
+    "Ja saps què és un **múltiple**, un **divisor** i un **nombre primer**. "
+    "Estic molt content de tu. Bona feina! 🌟"
 )

@@ -26,12 +26,17 @@ st.markdown(
     """
     <style>
     .block-container { max-width: 760px; }
-    [data-testid="stChatMessage"] { border-radius: 16px; }
-    h2 { color: #1f4e79; }
+    [data-testid="stChatMessage"] { border-radius: 16px; font-size: 1.2rem; }
+    [data-testid="stChatMessage"] p,
+    [data-testid="stChatMessage"] li,
+    [data-testid="stChatMessage"] span { font-size: 1.2rem; }
+    .stChatInput textarea { font-size: 1.2rem !important; }
+    h2 { color: #1f4e79; font-size: 1.44rem !important; }
+    p, li, label, .stMarkdown { font-size: 1.2rem; }
     .barra { background:#eef2f7; border-radius:10px; height:12px;
              overflow:hidden; margin:4px 0 10px 0; }
     .barra > div { background:linear-gradient(90deg,#4f8df9,#6fc3a0); height:100%; }
-    .petit { color:#6b7280; font-size:0.85rem; }
+    .petit { color:#6b7280; font-size:1.02rem; }
     </style>
     """,
     unsafe_allow_html=True,
