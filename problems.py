@@ -30,7 +30,7 @@ CAPITOLS = [
             {
                 "id": "1.1",
                 "pregunta": (
-                    "Fes aquestes divisions: **12 ÷ 3** i **3 ÷ 12**. "
+                    "Fes aquestes dues divisions: **12 ÷ 3** i **3 ÷ 12**. "
                     "Quina de les divisions és exacta?"
                 ),
                 "descripcio_pas": "Comprovar quina divisió és exacta.",
@@ -47,7 +47,7 @@ CAPITOLS = [
             {
                 "id": "1.2",
                 "pregunta": (
-                    "Tu diries que **12 és múltiple de 3, o bé que 3 és múltiple de 12?** "
+                    "Tu diries que **12 és múltiple de 3**, o bé que **3 és múltiple de 12?** "
                     "Per què?"
                 ),
                 "descripcio_pas": "Aplicar la definició de múltiple.",
@@ -57,9 +57,8 @@ CAPITOLS = [
                 ),
                 "conceptes_clau": ["12 és múltiple de 3", "12÷3 exacta", "3 no és múltiple"],
                 "pistes": [
-                    "Mira els teus resultats: quina divisió era exacta, 12÷3 o 3÷12?",
-                    "12÷3=4 és exacta → 12 SÍ és múltiple de 3. "
-                    "3÷12 no és entera → 3 NO és múltiple de 12.",
+                    "12÷3 = 4, i 3÷12=0,25",
+                    "Com que 12÷3 = 4, vol dir que 12=3·4, o sigui, que 12 és un múltiple de 3",
                 ],
             },
         ],
@@ -98,7 +97,7 @@ CAPITOLS = [
             {
                 "id": "2.2",
                 "pregunta": (
-                    "Escriu els **primers 5 múltiples de 15** (15×1, 15×2, 15×3, 15×4, 15×5). "
+                    "Escriu els **primers 5 múltiples de 15** (15 · 1, 15 · 2, 15 · 3, 15 · 4, 15 · 5). "
                     "Creus que els múltiples s'acaben algun dia, o continuen per sempre?"
                 ),
                 "descripcio_pas": "Calcular múltiples de 15 i concloure que són infinits.",
@@ -108,8 +107,8 @@ CAPITOLS = [
                 ),
                 "conceptes_clau": ["15", "30", "45", "60", "75", "infinits", "no s'acaben"],
                 "pistes": [
-                    "15×1=15, 15×2=30, 15×3=?... Escriu-los tots cinc.",
-                    "Podem calcular 15×100? I 15×1.000? Sempre podem anar més amunt...",
+                    "15 · 1=15, 15 · 2=30... Escriu-los tots cinc.",
+                    "Podem calcular 15 · 100? I 15 · 1.000? Sempre podem continuar...",
                 ],
             },
         ],
@@ -131,8 +130,8 @@ CAPITOLS = [
             {
                 "id": "3.1",
                 "pregunta": (
-                    "Fes: **12÷2**, **12÷3** i **12÷6**. "
-                    "Surten totes exactes?"
+                    "Fes: **12÷2**, **12÷3**. Són totes les divisions exactes? "
+                    "Ara prova  **12÷6**. És exacta la divisió?"
                 ),
                 "descripcio_pas": "Comprovar divisibilitat de 12 per 2, 3 i 6.",
                 "resposta_ref": (
@@ -148,9 +147,9 @@ CAPITOLS = [
             {
                 "id": "3.2",
                 "pregunta": (
-                    "Ara prova amb **10**: fes **10÷2**, **10÷3** i **10÷6**. "
+                    "Ara fes aquestes divisions **10÷2**, **10÷3** i i **10÷6**. "
                     "Quines surten exactes? "
-                    "Amb el 12 i el 10, **què passa quan un nombre és múltiple de 2 i de 3 alhora?**"
+                    "**Què passa quan un nombre és múltiple de 2 i de 3 alhora?**"
                 ),
                 "descripcio_pas": "Contraexemple amb 10 i generalitzar la regla.",
                 "resposta_ref": (
@@ -255,7 +254,6 @@ CAPITOLS = [
                 "id": "5.2",
                 "pregunta": (
                     "Explica amb les teves paraules **què és un nombre primer**. "
-                    "Com ho explicaries a un amic que no ho sap? "
                     "Posa un exemple."
                 ),
                 "descripcio_pas": "Definir nombre primer amb paraules pròpies i un exemple.",
