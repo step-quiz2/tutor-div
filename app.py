@@ -42,14 +42,10 @@ st.markdown(
 
 if "state" not in st.session_state:
     st.session_state.state = None  # None = encara no s'ha començat
-if "pending_hint" not in st.session_state:
-    st.session_state.pending_hint = False
 
 
 def reinicia():
     st.session_state.state = None
-    st.session_state.pending_hint = False
-
 
 # ─────────────────────────────── sidebar ──────────────────────────────── #
 
@@ -159,6 +155,14 @@ def processa(text_alumne: str):
     pos_abans = tutor.position_dict(state)
 
     trans = tutor.apply_action(state, result["action"])
+
+    if trans == "seguent_pas":
+        # El model pot oblidar incloure la pregunta del pas nou en el seu reply.
+        # Python garanteix que l'enunciat canònic arriba sempre a l'alumne,
+        # igual que fa a l'obertura de capítol i al mode de reserva.
+        pas = tutor.pas_actual(state)
+        q_canonica = f"**Pas {pas['id']}.** {pas['pregunta']}"
+        tutor.enrich_last_tutor(state, q_canonica)
 
     if trans == "fi":
         tutor.add_tutor(state, tutor.MISSATGE_FINAL)

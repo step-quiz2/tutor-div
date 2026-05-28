@@ -248,6 +248,27 @@ def _fallback_turn(capitol, current_position, transcript) -> dict:
             "control_parse_ok": True}
 
 
+# ──────────────────────── constructor de contents ─────────────────────── #
+
+def _build_contents(transcript: list, marker: str) -> list:
+    """Converteix el transcript intern en la llista de `contents` per a
+    l'API de Gemini: mapeja tutor→model i student→user, i prepend el
+    marcador de posició al darrer torn d'usuari.
+
+    Extret com a funció pròpia per poder-se testejar independentment
+    sense crida a l'API.
+    """
+    last_idx = len(transcript) - 1
+    contents = []
+    for i, turn in enumerate(transcript):
+        role = "model" if turn["role"] == "tutor" else "user"
+        text = turn["content"]
+        if i == last_idx and role == "user" and marker:
+            text = f"{marker}\n\n{text}"
+        contents.append({"role": role, "parts": [{"text": text}]})
+    return contents
+
+
 # ───────────────────────── funció pública ─────────────────────────────── #
 
 def tutor_turn(capitol: dict, current_position: dict,
@@ -286,18 +307,19 @@ def tutor_turn(capitol: dict, current_position: dict,
     marker = _format_position_marker(
         current_position, cap_total, len(capitol["passos"])
     )
-    last_idx = len(transcript) - 1
 
-    contents = []
-    for i, turn in enumerate(transcript):
-        role = "model" if turn["role"] == "tutor" else "user"
-        text = turn["content"]
-        if i == last_idx and role == "user" and marker:
-            text = f"{marker}\n\n{text}"
-        contents.append({"role": role, "parts": [{"text": text}]})
+    contents = _build_contents(transcript, marker)
 
     raw = _call(system_instruction, contents)
     reply, control_text, sep_found = _split_reply_and_control(raw)
+
+    # Guard: bloqueig de seguretat o truncament poden retornar reply buit.
+    # En lloc de mostrar un missatge en blanc, fem veure un error recuperable.
+    if not reply:
+        reply = (
+            "Ho sento, ara no puc formular una resposta. "
+            "Pots tornar a escriure el que has dit? 🙏"
+        )
 
     if sep_found and control_text:
         control = _parse_control_block(control_text)

@@ -232,7 +232,7 @@ CAPITOLS = [
                 "descripcio_pas": "Generalitzar la propietat: múltiple de 2 i 3 implica múltiple de 6.",
                 "resposta_ref": (
                     "Si un nombre és múltiple de 2 i de 3, aleshores també és múltiple de 6. "
-                    "Si és múltiple de 2 però no de 3, no necessàriament és múltiple de 6 (exemple: 10)."
+                    "Si és múltiple de 2 però no de 3, no és múltiple de 6 (exemple: 10). Tot múltiple de 6 ho és de 3, per tant si no és múltiple de 3 tampoc pot ser-ho de 6."
                 ),
                 "conceptes_clau": ["múltiple de 6", "sempre", "2 i 3", "no de 3 no de 6"],
                 "pistes": [

@@ -105,6 +105,19 @@ def add_tutor(state: dict, text: str) -> None:
     state["display"].append({"role": "tutor", "content": text})
 
 
+def enrich_last_tutor(state: dict, extra: str) -> None:
+    """Afegeix text extra al darrer missatge del tutor, tant al transcript
+    del capítol com al display. S'usa per injectar la pregunta canònica del
+    pas nou quan el model avança (seguent_pas), garantint que l'enunciat
+    autoritzat arriba a l'alumne fins i tot si el model l'oblida.
+    """
+    for lst in (state["transcript"], state["display"]):
+        for m in reversed(lst):
+            if m["role"] == "tutor":
+                m["content"] += f"\n\n---\n\n{extra}"
+                break
+
+
 def pop_last_student(state: dict) -> None:
     """Treu l'últim torn d'alumne (s'usa si la crida a l'IA falla, per
     no trencar l'alternança del transcript en el reintent)."""

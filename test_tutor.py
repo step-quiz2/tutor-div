@@ -138,9 +138,120 @@ def test_invariants():
         check(True, "invariant alternança")
 
 
+# ── _build_contents: mapping de rols i marcador ───────────────────────── #
+def test_build_contents():
+    """Cobreix la lògica que abans estava inline dins tutor_turn i no es
+    podia testejar sense API: mapping tutor→model/student→user i injecció
+    del marcador al darrer torn d'usuari."""
+    transcript = [
+        {"role": "tutor", "content": "Hola, quin és el 3×4?"},
+        {"role": "student", "content": "12"},
+    ]
+    marker = "[Posició actual: Capítol 1 de 5 · Pas 1 de 3]"
+    contents = llm._build_contents(transcript, marker)
+
+    check(len(contents) == 2, "build_contents: longitud correcta")
+    check(contents[0]["role"] == "model", "build_contents: tutor → model")
+    check(contents[1]["role"] == "user", "build_contents: student → user")
+    check(marker in contents[1]["parts"][0]["text"],
+          "build_contents: marcador present al darrer torn d'usuari")
+    check(marker not in contents[0]["parts"][0]["text"],
+          "build_contents: marcador absent al torn de model")
+    check("12" in contents[1]["parts"][0]["text"],
+          "build_contents: text original preservat al torn d'usuari")
+
+    # Sense marcador: el text no es modifica
+    contents2 = llm._build_contents(transcript, "")
+    check(contents2[1]["parts"][0]["text"] == "12",
+          "build_contents: sense marcador no modifica el text")
+
+    # Transcript llarg: el marcador va NOMÉS al darrer torn d'usuari
+    transcript3 = [
+        {"role": "tutor", "content": "Pregunta 1"},
+        {"role": "student", "content": "Resposta 1"},
+        {"role": "tutor", "content": "Bé. Pregunta 2"},
+        {"role": "student", "content": "Resposta 2"},
+    ]
+    contents3 = llm._build_contents(transcript3, marker)
+    check(marker not in contents3[1]["parts"][0]["text"],
+          "build_contents: marcador absent en torn d'usuari no final")
+    check(marker in contents3[3]["parts"][0]["text"],
+          "build_contents: marcador present únicament al darrer torn")
+
+
+# ── guard de reply buit ───────────────────────────────────────────────── #
+def test_empty_reply_split():
+    """Quan el model retorna text només amb el separador (reply buit),
+    _split_reply_and_control ha de retornar reply == '' (el guard de
+    tutor_turn el substituirà pel missatge d'error recuperable)."""
+    reply, ctrl, found = llm._split_reply_and_control(
+        '---CONTROL---\n{"action":"stay"}'
+    )
+    check(reply == "", "reply buit quan no hi ha text abans del separador")
+    check(found is True, "separador detectat amb reply buit")
+    check(ctrl == '{"action":"stay"}', "control block correcte amb reply buit")
+
+
+# ── enrich_last_tutor i injecció de pregunta canònica ─────────────────── #
+def test_enrich_last_tutor():
+    """Simula el que fa app.py quan trans == 'seguent_pas': afegir la
+    pregunta canònica del pas nou al darrer missatge del tutor."""
+    state = tutor.new_session()
+    tutor.add_student(state, "resposta correcta")
+    tutor.add_tutor(state, "Molt bé! 🎉 Excel·lent feina.")
+    trans = tutor.apply_action(state, "advance")
+    check(trans == "seguent_pas", "primera transició és seguent_pas")
+
+    pas = tutor.pas_actual(state)
+    q_canonica = f"**Pas {pas['id']}.** {pas['pregunta']}"
+    tutor.enrich_last_tutor(state, q_canonica)
+
+    # La pregunta canònica ha de ser al darrer missatge de tutor de display
+    darrer_tutor_display = next(
+        m for m in reversed(state["display"]) if m["role"] == "tutor"
+    )
+    check(pas["pregunta"] in darrer_tutor_display["content"],
+          "pregunta canònica al darrer torn de tutor (display)")
+
+    # I també al transcript del capítol
+    darrer_tutor_transcript = next(
+        m for m in reversed(state["transcript"]) if m["role"] == "tutor"
+    )
+    check(pas["pregunta"] in darrer_tutor_transcript["content"],
+          "pregunta canònica al darrer torn de tutor (transcript)")
+
+    # L'alternança del transcript s'ha de mantenir intacta
+    check(transcript_valid(state["transcript"]),
+          "transcript vàlid després d'enrich_last_tutor")
+
+
+# ── enrich_last_tutor no trenca el transcript del capítol nou ────────── #
+def test_enrich_no_trenca_capitol_nou():
+    """Quan la transició és seguent_capitol (no seguent_pas), apply_action
+    ja crea un transcript nou amb l'obertura. enrich_last_tutor no s'ha
+    de cridar en aquest cas, però si s'hi crida no ha de corrompre res."""
+    state = tutor.new_session()
+    # Avancem tots els passos del capítol 1 fins arribar a seguent_capitol
+    while True:
+        tutor.add_student(state, "resposta")
+        tutor.add_tutor(state, "feedback")
+        trans = tutor.apply_action(state, "advance")
+        if trans == "seguent_capitol":
+            break
+        if trans == "fi":
+            break
+    if trans == "seguent_capitol":
+        check(transcript_valid(state["transcript"]),
+              "transcript vàlid en inici de capítol nou")
+        check(state["transcript"][0]["role"] == "tutor",
+              "transcript de capítol nou comença per tutor")
+
+
 if __name__ == "__main__":
     for fn in [test_parsing, test_marker, test_prompt_render, test_walkthrough,
-               test_stay, test_pop_on_error, test_fallback, test_invariants]:
+               test_stay, test_pop_on_error, test_fallback, test_invariants,
+               test_build_contents, test_empty_reply_split,
+               test_enrich_last_tutor, test_enrich_no_trenca_capitol_nou]:
         fn()
         print(f"  ✓ {fn.__name__}")
     print(f"\n{_passats} comprovacions superades ✅")
