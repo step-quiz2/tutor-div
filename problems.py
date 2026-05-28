@@ -166,7 +166,7 @@ CAPITOLS = [
     },
 
     # ------------------------------------------------------------------ #
-    # CAPÍTOL 4 · Nombres primers (i imparell ≠ primer)                  #
+    # CAPÍTOL 4 · Nombres primers                                        #
     # ------------------------------------------------------------------ #
     {
         "id": 4,
@@ -178,40 +178,27 @@ CAPITOLS = [
         "passos": [
             {
                 "id": "4.1",
-                "pregunta": "El **7** té només 2 divisors (1 i 7). Llavors, el 7 és primer?",
-                "descripcio_pas": "Confirmar que el 7 és primer.",
-                "resposta_ref": "Sí. El 7 té només 2 divisors, l'1 i el 7. És primer.",
-                "conceptes_clau": ["si", "7 es primer", "primer"],
+                "pregunta": (
+                    "Al capítol anterior, el 7 tenia 2 divisors i el 12 en tenia 6. "
+                    "Quin dels dos és **primer**?"
+                ),
+                "descripcio_pas": "Aplicar la definició: primer = exactament 2 divisors. El 7 ho és, el 12 no.",
+                "resposta_ref": "El 7. Té només 2 divisors, així que és primer. El 12 en té 6, no és primer.",
+                "conceptes_clau": ["7", "el 7"],
                 "pistes": [
-                    "Primer vol dir: només 2 divisors, l'1 i ell mateix.",
-                    "El 7 té 1 i 7. Són 2. Per tant és primer.",
+                    "Un primer en té només 2. Quin dels dos en té 2?",
+                    "El 7 en té 2 → primer. El 12 en té 6 → no primer.",
                 ],
             },
             {
                 "id": "4.2",
-                "pregunta": "Ara el **9**. Fixa't: **9 ÷ 3 = 3**. El 9 és primer?",
-                "descripcio_pas": "Veure que el 9 NO és primer (té el 3 com a divisor).",
-                "resposta_ref": (
-                    "No. El 9 té 3 divisors: 1, 3 i 9. Com que té el 3, no és primer."
-                ),
-                "conceptes_clau": ["no", "no es primer", "te el 3"],
+                "pregunta": "Ara el **9**. Es divideix per 1, per 3 i per 9. El 9 és primer?",
+                "descripcio_pas": "Veure que el 9 NO és primer: té 3 divisors, no 2.",
+                "resposta_ref": "No. El 9 té 3 divisors (1, 3 i 9), i un primer en té només 2.",
+                "conceptes_clau": ["no", "no es primer", "3 divisors"],
                 "pistes": [
-                    "El 9 es divideix exacte per 3. Llavors té un divisor de més.",
-                    "Divisors del 9: 1, 3, 9. Són 3, no 2. Per tant no és primer.",
-                ],
-            },
-            {
-                "id": "4.3",
-                "pregunta": "Explica-ho amb les teves paraules: **què és un nombre primer**?",
-                "descripcio_pas": "Definir primer amb paraules pròpies.",
-                "resposta_ref": (
-                    "Un primer només es pot dividir exacte per l'1 i per ell mateix. "
-                    "Té només 2 divisors. Per exemple, el 7."
-                ),
-                "conceptes_clau": ["nomes 1 i ell mateix", "2 divisors"],
-                "pistes": [
-                    "Pensa en el 7: per quins nombres es divideix exacte?",
-                    "Un primer no es pot partir en grups iguals, només amb l'1 o amb ell sencer.",
+                    "Compta els seus divisors: 1, 3 i 9. Quants són?",
+                    "Són 3 divisors, no 2. Per tant el 9 no és primer.",
                 ],
             },
         ],
