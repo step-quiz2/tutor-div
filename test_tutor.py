@@ -78,7 +78,7 @@ def test_walkthrough():
             check(n_tutor == 1, "transcript del capítol nou reiniciat")
 
     check(state["finished"], "sessió acabada")
-    check(transitions.count("seguent_capitol") == 4, "4 transicions de capítol")
+    check(transitions.count("seguent_capitol") == 3, "3 transicions de capítol")
     check(transitions[-1] == "fi", "última transició és fi")
     total = sum(len(c["passos"]) for c in problems.CAPITOLS)
     check(guard == total, f"un torn per pas ({total})")

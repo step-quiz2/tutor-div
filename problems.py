@@ -117,103 +117,31 @@ CAPITOLS = [
                     "Sempre pots posar un nombre més gran. Per això no s'acaben mai.",
                 ],
             },
-            {
-                "id": "2.4",
-                "pregunta": "Què n'hi ha més: **divisors** del 15 o **múltiples** del 15?",
-                "descripcio_pas": "Contrastar: divisors finits (4) vs múltiples infinits.",
-                "resposta_ref": (
-                    "Hi ha molts més múltiples. Els divisors són només 4. "
-                    "Els múltiples són infinits."
-                ),
-                "conceptes_clau": ["multiples", "infinits"],
-                "pistes": [
-                    "Divisors del 15: només 4 (1, 3, 5, 15).",
-                    "Múltiples del 15: no s'acaben mai. Per tant n'hi ha molts més.",
-                ],
-            },
         ],
     },
 
     # ------------------------------------------------------------------ #
-    # CAPÍTOL 3 · Múltiple de 2 i de 3 → múltiple de 6?                  #
+    # CAPÍTOL 3 · Pocs o molts divisors                                  #
     # ------------------------------------------------------------------ #
     {
         "id": 3,
-        "titol": "Múltiple de 2 i de 3... i de 6?",
-        "emoji": "🔍",
-        "introduccio": "Investiguem una cosa. Si un nombre és múltiple de 2 **i** de 3, també ho és de 6?",
-        "passos": [
-            {
-                "id": "3.1",
-                "pregunta": "Fes **12 ÷ 2**. Surt exacte?",
-                "descripcio_pas": "12 és múltiple de 2.",
-                "resposta_ref": "12 ÷ 2 = 6. Sí, és exacta.",
-                "conceptes_clau": ["6", "si", "exacta"],
-                "pistes": [
-                    "El 12 és parell, oi? Els parells es divideixen exacte per 2.",
-                    "12 ÷ 2 = 6. Exacta.",
-                ],
-            },
-            {
-                "id": "3.2",
-                "pregunta": "Ara fes **12 ÷ 3**. Surt exacte?",
-                "descripcio_pas": "12 també és múltiple de 3.",
-                "resposta_ref": "12 ÷ 3 = 4. Sí, és exacta.",
-                "conceptes_clau": ["4", "si", "exacta"],
-                "pistes": [
-                    "Reparteix 12 en 3 grups iguals.",
-                    "12 ÷ 3 = 4. Exacta.",
-                ],
-            },
-            {
-                "id": "3.3",
-                "pregunta": "El 12 és múltiple de 2 i de 3. Ara fes **12 ÷ 6**. Surt exacte?",
-                "descripcio_pas": "12 també és múltiple de 6.",
-                "resposta_ref": "12 ÷ 6 = 2. Sí, és exacta. Per tant 12 és múltiple de 6.",
-                "conceptes_clau": ["2", "si", "exacta"],
-                "pistes": [
-                    "Reparteix 12 en 6 grups iguals.",
-                    "12 ÷ 6 = 2. Exacta.",
-                ],
-            },
-            {
-                "id": "3.4",
-                "pregunta": "Llavors: si un nombre és múltiple de 2 i de 3, **també ho és de 6**?",
-                "descripcio_pas": "Generalitzar la regla (amb el 10 com a contraexemple a la pista).",
-                "resposta_ref": (
-                    "Sí. Si un nombre és múltiple de 2 i de 3 alhora, sempre és múltiple de 6."
-                ),
-                "conceptes_clau": ["si", "tambe", "de 6"],
-                "pistes": [
-                    "El 12 era de 2 i de 3, i també de 6.",
-                    "El 10 és de 2 però NO de 3, i tampoc és de 6. Cal complir-ho amb tots dos.",
-                ],
-            },
-        ],
-    },
-
-    # ------------------------------------------------------------------ #
-    # CAPÍTOL 4 · Pocs o molts divisors                                  #
-    # ------------------------------------------------------------------ #
-    {
-        "id": 4,
         "titol": "Pocs o molts divisors",
         "emoji": "📊",
         "introduccio": "Alguns nombres tenen pocs divisors i d'altres en tenen molts. Mirem-ho!",
         "passos": [
             {
-                "id": "4.1",
-                "pregunta": "Quins nombres divideixen **exacte el 7**?",
-                "descripcio_pas": "Trobar els divisors del 7 (només 1 i 7).",
+                "id": "3.1",
+                "pregunta": "Quins d'aquests nombres són **divisors del 7**? (1, 2, 3, 4, 5, 6, 7)",
+                "descripcio_pas": "Triar els divisors del 7 de la llista (només 1 i 7).",
                 "resposta_ref": "Només l'1 i el 7. El 7 té 2 divisors.",
                 "conceptes_clau": ["1 i 7", "2 divisors", "dos"],
                 "pistes": [
-                    "Prova 7÷1, 7÷2, 7÷3... Quines surten exactes?",
+                    "Mira quins divideixen exacte el 7: 7÷1, 7÷2, 7÷3...",
                     "Només 7÷1 i 7÷7 surten exactes. Per tant: 1 i 7.",
                 ],
             },
             {
-                "id": "4.2",
+                "id": "3.2",
                 "pregunta": "Ara els divisors del **12**. Quins nombres el divideixen exacte?",
                 "descripcio_pas": "Trobar els divisors del 12 (en té 6).",
                 "resposta_ref": "1, 2, 3, 4, 6 i 12. El 12 té 6 divisors.",
@@ -224,7 +152,7 @@ CAPITOLS = [
                 ],
             },
             {
-                "id": "4.3",
+                "id": "3.3",
                 "pregunta": "Qui té **més divisors**, el 7 o el 12?",
                 "descripcio_pas": "Comparar la quantitat de divisors.",
                 "resposta_ref": "El 12 (en té 6), molt més que el 7 (que en té 2).",
@@ -238,10 +166,10 @@ CAPITOLS = [
     },
 
     # ------------------------------------------------------------------ #
-    # CAPÍTOL 5 · Nombres primers (i imparell ≠ primer)                  #
+    # CAPÍTOL 4 · Nombres primers (i imparell ≠ primer)                  #
     # ------------------------------------------------------------------ #
     {
-        "id": 5,
+        "id": 4,
         "titol": "Nombres primers",
         "emoji": "⭐",
         "introduccio": (
@@ -249,7 +177,7 @@ CAPITOLS = [
         ),
         "passos": [
             {
-                "id": "5.1",
+                "id": "4.1",
                 "pregunta": "El **7** té només 2 divisors (1 i 7). Llavors, el 7 és primer?",
                 "descripcio_pas": "Confirmar que el 7 és primer.",
                 "resposta_ref": "Sí. El 7 té només 2 divisors, l'1 i el 7. És primer.",
@@ -260,8 +188,8 @@ CAPITOLS = [
                 ],
             },
             {
-                "id": "5.2",
-                "pregunta": "I el **9**? Fixa't: **9 ÷ 3 = 3**. El 9 és primer?",
+                "id": "4.2",
+                "pregunta": "Ara el **9**. Fixa't: **9 ÷ 3 = 3**. El 9 és primer?",
                 "descripcio_pas": "Veure que el 9 NO és primer (té el 3 com a divisor).",
                 "resposta_ref": (
                     "No. El 9 té 3 divisors: 1, 3 i 9. Com que té el 3, no és primer."
@@ -273,7 +201,7 @@ CAPITOLS = [
                 ],
             },
             {
-                "id": "5.3",
+                "id": "4.3",
                 "pregunta": "El 9 és imparell però no és primer. **'Imparell' vol dir el mateix que 'primer'?**",
                 "descripcio_pas": "Separar clarament imparell de primer.",
                 "resposta_ref": (
@@ -288,7 +216,7 @@ CAPITOLS = [
                 ],
             },
             {
-                "id": "5.4",
+                "id": "4.4",
                 "pregunta": "Explica-ho amb les teves paraules: **què és un nombre primer**?",
                 "descripcio_pas": "Definir primer amb paraules pròpies.",
                 "resposta_ref": (

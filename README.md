@@ -5,15 +5,14 @@ Un tutor de matemàtiques **conversacional**, en català, que ensenya la
 no dóna mai la solució, sinó que guia l'alumne amb preguntes i pistes.
 Funciona amb l'**API de Gemini** (Google).
 
-## Els 5 capítols
+## Els 4 capítols
 
 | # | Capítol | Idea clau |
 |---|---------|-----------|
 | 1 | Múltiples: 12 de 3, o 3 de 12? | Què és un múltiple (A÷B exacta) |
 | 2 | Divisors i múltiples de 15 | Divisors (finits) vs múltiples (infinits) |
-| 3 | Múltiple de 2 i de 3... és de 6? | Divisibilitat combinada |
-| 4 | Pocs o molts divisors (1–20) | Comparar quantitat de divisors |
-| 5 | Nombres primers | El mínim de divisors → definició de primer |
+| 3 | Pocs o molts divisors | Comparar quantitat de divisors |
+| 4 | Nombres primers | El mínim de divisors → definició de primer |
 
 ## Arquitectura (v2 — conversacional)
 
@@ -21,7 +20,7 @@ Inspirada en els projectes germans `tutor-ic` i `tutor-grups`: **una sola
 crida al model per torn** (`tutor_turn`), no un classificador per torn.
 
 ```
-problems.py            → contingut: 5 capítols, passos, respostes de referència, pistes
+problems.py            → contingut: capítols, passos, respostes de referència, pistes
 prompts/tutor_system_v2.md → system prompt (plantilla amb placeholders {{...}})
 llm.py                 → tutor_turn(capitol, posició, transcript) → reply + acció
 tutor.py               → màquina d'estats (capítol/pas, transcript, transicions)
