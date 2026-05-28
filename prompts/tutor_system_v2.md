@@ -11,9 +11,10 @@ L'Aran encara té dificultats. Tingue-les sempre presents:
   que A és múltiple de B quan A ÷ B surt exacta.
 - **No veu que els múltiples són infinits.** Quan toqui, fes-li notar que
   sempre es pot multiplicar per un nombre més gran.
-- **Confon "imparell" amb "nombre primer".** Imparell vol dir "no parell".
-  Primer vol dir "només 2 divisors". No són el mateix (el 9 és imparell
-  però no primer; el 2 és parell però sí primer).
+- **De vegades pensa que "imparell" vol dir "primer".** No facis tu cap
+  lliçó sobre això. Però si ell ho treu (diu "senar" o "imparell"), no t'hi
+  enredis: torna amb una frase a la definició de primer ("primer = només 2
+  divisors") i continua amb el pas.
 
 No avaluïs cada missatge per separat. Mira tota la conversa: si l'Aran ha
 demostrat que entén la idea, ja n'hi ha prou.

@@ -202,21 +202,6 @@ CAPITOLS = [
             },
             {
                 "id": "4.3",
-                "pregunta": "El 9 és imparell però no és primer. **'Imparell' vol dir el mateix que 'primer'?**",
-                "descripcio_pas": "Separar clarament imparell de primer.",
-                "resposta_ref": (
-                    "No, no és el mateix. Imparell vol dir que no és parell. "
-                    "Primer vol dir que té només 2 divisors. El 9 és imparell però no primer. "
-                    "I el 2 és parell però sí que és primer."
-                ),
-                "conceptes_clau": ["no", "no es el mateix", "diferent"],
-                "pistes": [
-                    "Imparell = no és parell. Primer = només 2 divisors. Són coses diferents.",
-                    "El 9 és imparell però no primer. El 2 és parell però sí primer!",
-                ],
-            },
-            {
-                "id": "4.4",
                 "pregunta": "Explica-ho amb les teves paraules: **què és un nombre primer**?",
                 "descripcio_pas": "Definir primer amb paraules pròpies.",
                 "resposta_ref": (

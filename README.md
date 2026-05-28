@@ -48,8 +48,8 @@ construït. Jutjar la conversa sencera ho evita. (Veure els `CHANGELOG` de
 ## Disseny pensat per a l'Aran (alumne amb dificultats)
 
 El diàleg està afinat per a un alumne de 12 anys que encara confon
-**múltiple** i **divisor**, no veu que els múltiples són **infinits**, i
-confon **imparell** amb **primer**. Per això:
+**múltiple** i **divisor** i no veu que els múltiples són **infinits**.
+Per això:
 
 - Cada **pas** demana **una sola cosa**, amb frases molt curtes.
 - El tutor (IA i mode de reserva) **mai fa dues preguntes** en un missatge.
