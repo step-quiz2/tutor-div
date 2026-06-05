@@ -174,11 +174,20 @@ Cada resposta teva acaba amb un bloc de control. Format EXACTE:
 <El missatge per a l'Aran, curt, en català>
 
 ---CONTROL---
-{"action": "stay|advance"}
+{"action": "stay|advance", "diagnostic": "<codi|null>"}
 ```
 
 - `action`: l'única decisió que prens. `stay` o `advance`. `stay` és el
   default segur: usa'l sempre que dubtis.
+- `diagnostic`: nomena l'error que mostra ara l'Aran.
+  - Si fas `action="stay"`: posa el codi del catàleg que millor descrigui
+    el seu error. Els codis vàlids te'ls recordo a cada torn dins el
+    marcador de posició (segona línia entre claudàtors). Si cap encaixa,
+    posa `"GEN_other"`.
+  - Si fas `action="advance"`: posa `null` (l'Aran ho ha entès, no hi ha
+    error que diagnosticar).
+  - És **metadada**: no canvia el que dius a l'Aran ni el flux, i va
+    SEMPRE dins el JSON, mai al missatge visible.
 - El separador `---CONTROL---` és **literal**. Sense ell, el sistema no et
   pot llegir.
 - El bloc de control és **invisible** per a l'Aran. No el mencionis.

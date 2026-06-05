@@ -35,6 +35,8 @@ import time
 import unicodedata
 from pathlib import Path
 
+import problems
+
 try:
     from google import genai
     from google.genai import types as genai_types
@@ -190,12 +192,20 @@ def _call(system_instruction: str, contents: list) -> str:
 # ───────────────────────────── parseig ────────────────────────────────── #
 
 def _format_position_marker(current_position: dict, cap_total: int,
-                            n_passos: int) -> str:
+                            n_passos: int,
+                            diagnostic_options: list = None) -> str:
     cap = current_position.get("capitol")
     pas = current_position.get("pas")
     if cap is None or pas is None:
         return ""
-    return f"[Posició actual: Capítol {cap} de {cap_total} · Pas {pas} de {n_passos}]"
+    base = (f"[Posició actual: Capítol {cap} de {cap_total} · "
+            f"Pas {pas} de {n_passos}]")
+    if diagnostic_options:
+        codes = ", ".join(diagnostic_options)
+        base += (f"\n[Codis de diagnòstic vàlids ara: {codes}. "
+                 f"Posa'n un al camp \"diagnostic\" del control block si "
+                 f"fas stay; posa null si avances.]")
+    return base
 
 
 def _split_reply_and_control(raw: str):
@@ -206,6 +216,10 @@ def _split_reply_and_control(raw: str):
 
 
 def _parse_control_block(text: str) -> dict:
+    """Parseja el control block. `diagnostic` és opcional: el llegim en cru
+    com a string (o None) i NO el validem contra cap catàleg aquí — això ho
+    fa el caller (tutor_turn → problems.normalize_diagnostic). Un diagnostic
+    absent o mal format NO marca _parse_error; només JSON malformat ho fa."""
     text = text.strip()
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*", "", text)
@@ -215,11 +229,14 @@ def _parse_control_block(text: str) -> dict:
         if not isinstance(data, dict):
             raise ValueError
     except Exception:
-        return {"action": "stay", "_parse_error": True}
+        return {"action": "stay", "diagnostic": None, "_parse_error": True}
     action = data.get("action", "stay")
     if action not in VALID_ACTIONS:
         action = "stay"
-    return {"action": action, "_parse_error": False}
+    diagnostic = data.get("diagnostic")
+    if not isinstance(diagnostic, str):
+        diagnostic = None
+    return {"action": action, "diagnostic": diagnostic, "_parse_error": False}
 
 
 # ───────────────────────── mode de reserva (sense IA) ─────────────────── #
@@ -235,6 +252,9 @@ def _fallback_turn(capitol, current_position, transcript) -> dict:
     pas_num = current_position.get("pas", 1)
     passos = capitol["passos"]
     pas = passos[pas_num - 1]
+    # Codi probable d'aquest pas: aposta determinista raonable per anotar el
+    # diagnòstic en els stays del mode reserva (evita un panell buit).
+    likely = problems.likely_diagnostic_for_step(pas)
     ultim_student = next(
         (t["content"] for t in reversed(transcript) if t["role"] == "student"),
         "",
@@ -244,6 +264,7 @@ def _fallback_turn(capitol, current_position, transcript) -> dict:
         pistes = pas.get("pistes", [])
         pista = pistes[0] if pistes else "Comencem pel primer càlcul, amb calma."
         return {"reply": f"Pista: {pista}", "action": "stay",
+                "diagnostic": likely,
                 "n_api_calls": 0, "mode": "py", "raw_output": "",
                 "control_parse_ok": True}
 
@@ -259,16 +280,23 @@ def _fallback_turn(capitol, current_position, transcript) -> dict:
     if prou:
         # NOTA: no hi posem la pregunta del pas següent. Quan l'acció és
         # "advance", tutor.enrich_last_tutor ja la mostra com a bombolla
-        # determinista pròpia. Aquí només felicitem (curt).
+        # determinista pròpia. Aquí només felicitem (curt). L'alumne ha
+        # encertat → cap diagnòstic.
         reply = "Molt bé! 🎉 Ho has entès."
         return {"reply": reply, "action": "advance",
+                "diagnostic": None,
                 "n_api_calls": 0, "mode": "py", "raw_output": "",
                 "control_parse_ok": True}
 
-    pistes = pas.get("pistes", [])
-    pista = pistes[0] if pistes else "Torna-ho a provar a poc a poc."
+    # Stay per error: si el pas té pista mapejada al codi probable, fem-la
+    # servir; si no, la primera pista pre-escrita.
+    pista = problems.hint_for_diagnostic(pas, likely)
+    if not pista:
+        pistes = pas.get("pistes", [])
+        pista = pistes[0] if pistes else "Torna-ho a provar a poc a poc."
     return {"reply": f"Encara no. Pista: {pista}",
-            "action": "stay", "n_api_calls": 0, "mode": "py",
+            "action": "stay", "diagnostic": likely,
+            "n_api_calls": 0, "mode": "py",
             "raw_output": "", "control_parse_ok": True}
 
 
@@ -329,7 +357,8 @@ def tutor_turn(capitol: dict, current_position: dict,
 
     system_instruction = _load_system_prompt(capitol, cap_total, current_position)
     marker = _format_position_marker(
-        current_position, cap_total, len(capitol["passos"])
+        current_position, cap_total, len(capitol["passos"]),
+        diagnostic_options=problems.allowed_diagnostics(capitol),
     )
 
     contents = _build_contents(transcript, marker)
@@ -349,12 +378,24 @@ def tutor_turn(capitol: dict, current_position: dict,
         control = _parse_control_block(control_text)
         parse_ok = not control.get("_parse_error", False)
     else:
-        control = {"action": "stay"}
+        control = {"action": "stay", "diagnostic": None}
         parse_ok = False
+
+    # Normalització del diagnòstic contra el catàleg del capítol (punt únic
+    # de validació; el parser no toca el catàleg). Codi desconegut →
+    # GEN_other; absent/mal format → None. Si l'acció és "advance" el
+    # diagnòstic no té sentit (l'alumne ha encertat): el forcem a None.
+    if control["action"] == "advance":
+        diagnostic = None
+    else:
+        diagnostic = problems.normalize_diagnostic(
+            capitol, control.get("diagnostic")
+        )
 
     return {
         "reply": reply,
         "action": control["action"],
+        "diagnostic": diagnostic,
         "n_api_calls": 1,
         "mode": "ai",
         "raw_output": raw,

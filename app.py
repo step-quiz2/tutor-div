@@ -203,6 +203,7 @@ def processa(text_alumne: str):
     state["history"].append({
         "position_before": pos_abans,
         "action": result["action"],
+        "diagnostic": result.get("diagnostic"),
         "transition": trans,
         "control_parse_ok": result["control_parse_ok"],
         "n_api_calls": result["n_api_calls"],
