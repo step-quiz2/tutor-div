@@ -384,6 +384,52 @@ _stub.query_params._d = {}
 
 
 # =============================================================================
+# _trailing_tutor_cluster — només el TORN ACTUAL (com tutor-ic)
+# =============================================================================
+print("\nTest 19 — _trailing_tutor_cluster: obertura → només la bombolla "
+      "d'obertura")
+s = tutor.new_session()
+cl = app._trailing_tutor_cluster(s)
+check("a l'inici hi ha 1 bombolla de tutor", len(cl) == 1)
+check("és l'obertura del capítol", "Capítol 1" in cl[0]["content"])
+
+print("\nTest 20 — _trailing_tutor_cluster: després d'un 'stay' → només la "
+      "resposta del model")
+s = tutor.new_session()
+tutor.add_student(s, "no ho sé")
+tutor.add_tutor(s, "Pensa-hi una mica més…", source="ai")
+s["display"][-1]["action"] = "stay"
+cl = app._trailing_tutor_cluster(s)
+check("només 1 bombolla (la resposta)", len(cl) == 1)
+check("no inclou el missatge de l'alumne",
+      all(m["role"] == "tutor" for m in cl))
+check("manté la clau action per pintar el color",
+      cl[0].get("action") == "stay")
+
+print("\nTest 21 — _trailing_tutor_cluster: després d'un 'advance' → resposta "
+      "+ enunciat nou (py), sense arrossegar l'historial")
+s = tutor.new_session()
+# torn 1: avança
+tutor.add_student(s, "4")
+tutor.add_tutor(s, "Molt bé!", source="ai")
+s["display"][-1]["action"] = "advance"
+tutor.enrich_last_tutor(s, "**PREGUNTA.** Següent pregunta?")
+cl = app._trailing_tutor_cluster(s)
+check("clúster de 2 bombolles (resposta + enunciat py)", len(cl) == 2)
+check("la 1a és la resposta de la IA", cl[0].get("action") == "advance")
+check("la 2a és determinista (py, sense action)",
+      cl[1]["source"] == "py" and "action" not in cl[1])
+# torn 2: encara que el display creixi, el clúster segueix sent del torn actual
+tutor.add_student(s, "no ho sé")
+tutor.add_tutor(s, "Tornem-hi…", source="ai")
+s["display"][-1]["action"] = "stay"
+cl2 = app._trailing_tutor_cluster(s)
+check("després d'un 2n torn, el clúster torna a ser curt (1)", len(cl2) == 1)
+check("display complet conservat a l'estat (historial intacte)",
+      len(s["display"]) > len(cl2))
+
+
+# =============================================================================
 print("\n" + "=" * 60)
 print(f"Tests passats: {PASSED}")
 print(f"Tests fallits: {FAILED}")

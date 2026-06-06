@@ -204,6 +204,38 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# ── Ajustos de layout NOMÉS en mode docent ─────────────────────────────────
+# Objectiu: donar més amplada a la conversa i al panell de senyals. El panell
+# ja no marxa de la vista perquè ara la conversa només mostra el torn actual
+# (columna curta), així que no cal cap truc de posicionament. (En mode alumne
+# no hi ha panell ni columnes, així que aquests retocs no s'apliquen.)
+if DOCENT_MODE:
+    st.markdown(
+        """
+        <style>
+        /* Barra lateral ~20% més estreta (només conté estat i controls). */
+        section[data-testid="stSidebar"] {
+            width: 17rem !important;
+            min-width: 17rem !important;
+            max-width: 17rem !important;
+        }
+        /* Aprofitem tota l'amplada i reduïm la separació esquerra/dreta. */
+        .block-container {
+            max-width: 100% !important;
+            padding-left: 3rem !important;
+            padding-right: 2.5rem !important;
+        }
+        /* Menys espai vertical entre bombolles (~-20%). */
+        .tutor-card   { margin: 0.95rem 0 !important; }
+        .student-card { margin: 0.95rem 0 0.95rem auto !important; }
+        [data-testid="stVerticalBlock"] { gap: 0.8rem !important; }
+        /* Menys separació entre la conversa i el panell de senyals. */
+        [data-testid="stHorizontalBlock"] { gap: 1.6rem !important; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
 
 # =============================================================================
 # Helpers de presentació (portats de tutor-ic; markdown amb suport
@@ -551,14 +583,28 @@ state = st.session_state.state
 
 # ─────────────────────────── historial del xat ────────────────────────── #
 
-def _render_chat_history():
-    """Pinta la llegenda i totes les bombolles del display. Extret perquè
-    es pugui col·locar dins d'una columna en mode docent."""
-    render_layer_legend()
-    for m in state["display"]:
+def _trailing_tutor_cluster(state):
+    """Bombolles del tutor des de l'últim torn de l'alumne fins al final del
+    display. Normalment: la resposta del model + (si Python ha avançat)
+    l'enunciat canònic del pas nou; a l'obertura, el missatge d'obertura del
+    capítol. Igual que fa tutor-ic: mostrem NOMÉS el torn actual, no tot
+    l'historial, perquè la columna no creixi i el panell de senyals es
+    mantingui sempre a la vista sense necessitat de cap truc."""
+    cluster = []
+    for m in reversed(state["display"]):
         if m["role"] == "student":
-            _render_student_card(m["content"])
-            continue
+            break
+        cluster.append(m)
+    cluster.reverse()
+    return [m for m in cluster if m["role"] == "tutor"]
+
+
+def _render_current_turn():
+    """Pinta la llegenda de capes i NOMÉS el clúster de tutor del torn actual
+    (vegeu _trailing_tutor_cluster). Substitueix el render de tot l'historial
+    perquè div es comporti com ic: la conversa no s'acumula en pantalla."""
+    render_layer_legend()
+    for m in _trailing_tutor_cluster(state):
         # L'estil (color d'acció vs. determinista, xip d'origen) el decideix
         # la funció pura `bubble_style`, fàcil de testejar sense Streamlit.
         color, source, deterministic = bubble_style(m)
@@ -566,17 +612,18 @@ def _render_chat_history():
                            deterministic=deterministic)
 
 
-# En mode docent: conversa a l'esquerra, panell de senyals SEMPRE VISIBLE a
-# la dreta. En mode alumne: conversa a tota amplada, sense panell.
+# En mode docent: conversa a l'esquerra, panell de senyals a la dreta. Com que
+# ara només pintem el torn actual, la columna és curta i el panell no marxa de
+# la vista. En mode alumne: conversa a tota amplada, sense panell.
 if DOCENT_MODE:
     _col_conv, _col_signals = st.columns([2, 1], gap="large")
     with _col_conv:
-        _render_chat_history()
+        _render_current_turn()
     with _col_signals:
         with st.container(border=True):
             render_inspector(state)
 else:
-    _render_chat_history()
+    _render_current_turn()
 
 
 # ─────────────────────────── processament d'un torn ───────────────────── #
