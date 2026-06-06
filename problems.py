@@ -61,7 +61,7 @@ CAPITOLS = [
         "passos": [
             {
                 "id": "1.1",
-                "pregunta": "Quant fa **12 ÷ 3**?",
+                "pregunta": "Quan divideixes 12 entre 3, quin resultat obtens?",
                 "descripcio_pas": "Calcular 12÷3 i veure que és exacta.",
                 "resposta_ref": "12 ÷ 3 = 4. Surt rodó, és exacta.",
                 "conceptes_clau": ["4", "exacta"],
@@ -205,7 +205,7 @@ CAPITOLS = [
         "passos": [
             {
                 "id": "3.1",
-                "pregunta": "Quins d'aquests nombres són **divisors del 7**? (1, 2, 3, 4, 5, 6, 7)",
+                "pregunta": "Quins d'aquests nombres divideixen el 7 de manera exacta?\n\n{1, 2, 3, 4, 5, 6, 7}",
                 "descripcio_pas": "Triar els divisors del 7 de la llista (només 1 i 7).",
                 "resposta_ref": "Només l'1 i el 7. El 7 té 2 divisors.",
                 "conceptes_clau": ["1 i 7", "2 divisors", "dos"],
@@ -217,7 +217,7 @@ CAPITOLS = [
             },
             {
                 "id": "3.2",
-                "pregunta": "Ara els divisors del **12**. Quins nombres el divideixen exacte?",
+                "pregunta": "Ara els divisors del 12. Quins nombres el divideixen exacte, entre aquests?\n\n{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}",
                 "descripcio_pas": "Trobar els divisors del 12 (en té 6).",
                 "resposta_ref": "1, 2, 3, 4, 6 i 12. El 12 té 6 divisors.",
                 "conceptes_clau": ["1 2 3 4 6 12", "6 divisors", "sis"],
@@ -277,8 +277,11 @@ CAPITOLS = [
             {
                 "id": "4.1",
                 "pregunta": (
-                    "Al capítol anterior, el 7 tenia 2 divisors i el 12 en tenia 6. "
-                    "Quin dels dos és **primer**?"
+                    "Al capítol anterior, has vist que\n"
+                    "el nombre 7 té 2 divisors\n"
+                    "el nombre 12 té 6 divisors\n\n"
+                    "Creus que el nombre 7 és nombre primer?\n"
+                    "Creus que el nombre 12 és nombre primer?"
                 ),
                 "descripcio_pas": "Aplicar la definició: primer = exactament 2 divisors. El 7 ho és, el 12 no.",
                 "resposta_ref": "El 7. Té només 2 divisors, així que és primer. El 12 en té 6, no és primer.",
