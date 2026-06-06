@@ -27,6 +27,7 @@ UI (unificada amb el tutor germà `tutor-ic`, Tasca 2):
 
 from __future__ import annotations
 
+import json
 import re
 
 import streamlit as st
@@ -376,7 +377,7 @@ def _position_summary_div(pos):
     p = pos.get("pas")
     if c is None or p is None:
         return "—"
-    return f"cap. {c} · pas {p}"
+    return f"capítol {c}.{p}"
 
 
 def inspector_snapshot_div(state):
@@ -419,6 +420,46 @@ def inspector_snapshot_div(state):
     }
 
 
+def build_session_record(state) -> dict:
+    """Munta el registre complet d'una sessió per a descàrrega (mode docent).
+
+    Recull el "contracte" sencer entre Python i la IA, en tres parts:
+
+      - `meta`: on és la sessió i quants torns porta.
+      - `conversa`: la seqüència visible de bombolles (display), amb el seu
+        `source` (student / py / ai) i, si en té, l'acció que la va pintar.
+        És el que ha vist l'alumne, en ordre.
+      - `contracte_per_torn`: el rastre de control torn a torn (state
+        history): què va emetre la IA (`action`, `diagnostic`, `raw_output`),
+        què va decidir Python (`transition`, posició abans), si el control
+        block es va poder parsejar, i quantes crides a l'API hi va haver.
+
+    Tot són dades que ja viuen a l'estat; aquí només es reorganitzen en una
+    forma estable i autoexplicativa per a qui revisi el JSON fora de l'app.
+    """
+    cap = tutor.capitol_actual(state) if "cap_idx" in state else None
+    return {
+        "meta": {
+            "capitol_actual": cap.get("id") if cap else None,
+            "titol_capitol": cap.get("titol") if cap else None,
+            "pas_idx": state.get("pas_idx"),
+            "finished": state.get("finished", False),
+            "turn_count": state.get("turn_count", 0),
+            "model": getattr(llm, "MODEL", None),
+        },
+        "conversa": [
+            {
+                "role": m.get("role"),
+                "source": m.get("source"),
+                "action": m.get("action"),
+                "content": m.get("content"),
+            }
+            for m in state.get("display", [])
+        ],
+        "contracte_per_torn": state.get("history", []),
+    }
+
+
 def render_inspector(state):
     """Panell de senyals "Com pensa el tutor" (Tasca 1).
 
@@ -436,10 +477,7 @@ def render_inspector(state):
     show_debug = _query_flag("debug", default=False)
 
     st.markdown(
-        '<div class="signals-title">🔬 Senyals en directe '
-        '<span class="signals-sub">(mode docent)</span></div>'
-        '<div class="signals-thesis">🤖 la IA emet l\'acció · '
-        "🐍 Python decideix la posició</div>",
+        '<div class="signals-title">🔬 Reaccions en directe</div>',
         unsafe_allow_html=True,
     )
 
@@ -486,9 +524,21 @@ def render_inspector(state):
         else:
             st.markdown(
                 '<div class="inspector-line inspector-muted">'
-                "Sense malentesa registrada (l'alumne va per bon camí).</div>",
+                "No hi ha cap malentès.</div>",
                 unsafe_allow_html=True,
             )
+
+    # Descàrrega del registre complet de la sessió (mode docent). Botó
+    # sempre disponible al panell; si encara no hi ha cap torn, es baixa
+    # igualment l'estat inicial (conversa amb l'obertura, contracte buit).
+    record = build_session_record(state)
+    st.download_button(
+        "⬇️ Baixa el registre (JSON)",
+        data=json.dumps(record, ensure_ascii=False, indent=2),
+        file_name="sessio_divisibilitat.json",
+        mime="application/json",
+        use_container_width=True,
+    )
 
     # Capa de depuració: només amb ?debug=1. Revela el raw_output i el rastre
     # complet, consolidant l'antic expander dins d'aquest mateix inspector.
@@ -680,6 +730,13 @@ def processa(text_alumne: str):
         "transition": trans,
         "control_parse_ok": result["control_parse_ok"],
         "n_api_calls": result["n_api_calls"],
+        # Per al registre JSON docent (descarregable amb ?docent=1): el text
+        # que va respondre el tutor aquest torn i el raw_output cru del model
+        # (inclou el bloc ---CONTROL--- abans de parsejar). Junts deixen veure
+        # el "contracte" sencer Python↔IA torn a torn.
+        "reply": result["reply"],
+        "source": font,
+        "raw_output": result.get("raw_output"),
     })
 
 

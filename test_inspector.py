@@ -245,7 +245,7 @@ check("div mai usa groc (no hi ha retrocés)",
 # =============================================================================
 print("\nTest 6 — _position_summary_div")
 check("posició normal", app._position_summary_div({"capitol": 2, "pas": 3})
-      == "cap. 2 · pas 3")
+      == "capítol 2.3")
 check("buit → —", app._position_summary_div({}) == "—")
 check("None → —", app._position_summary_div(None) == "—")
 check("incompleta → —", app._position_summary_div({"capitol": 1}) == "—")
@@ -269,9 +269,9 @@ check("swatch == valors CSS del verd",
 check("parse_ok True", snap["parse_ok"] is True)
 check("transition propagada", snap["transition"] == "seguent_pas")
 check("sense diagnostic", snap["diagnostic"] is None)
-check("before formatat", snap["before"] == "cap. 1 · pas 1")
+check("before formatat", snap["before"] == "capítol 1.1")
 # 'after' es deriva de l'estat viu (post-acció del torn més recent)
-check("after derivat de l'estat viu", snap["after"] == "cap. 1 · pas 1")
+check("after derivat de l'estat viu", snap["after"] == "capítol 1.1")
 
 print("\nTest 9 — inspector_snapshot_div: swatch SEMPRE casa amb el color")
 for act, expected in [("advance", "green"), ("stay", "gray")]:
@@ -308,7 +308,7 @@ _stub.query_params._d = {}
 _stub.captured = []
 app.render_inspector({"history": []})
 blob = "\n".join(_stub.captured)
-check("pinta la capçalera de senyals", "Senyals en directe" in blob)
+check("pinta la capçalera de senyals", "Reaccions en directe" in blob)
 check("diu que encara no hi ha torns", "Encara no hi ha cap torn" in blob)
 
 print("\nTest 13 — render_inspector: torn advance net")
@@ -317,16 +317,17 @@ _stub.captured = []
 app.render_inspector(fresh_state_with_turn(action="advance"))
 blob = "\n".join(_stub.captured)
 check("mostra l'acció 'avança'", "avança" in blob)
-check("mostra la posició", "cap. 1 · pas 1" in blob)
+check("mostra la posició", "capítol 1.1" in blob)
 check("sense ⚠ quan el parse és correcte", "⚠" not in blob)
-check("diu que no hi ha malentesa", "Sense malentesa" in blob)
+check("diu que no hi ha malentès", "No hi ha cap malentès" in blob)
 # Soroll eliminat: ja no es pinta el codi d'acció cru com a xip a la fila.
 check("NO pinta el codi cru 'advance' a la fila d'acció",
       '<span class="act-code">advance' not in blob
       and "advance</span>" not in blob)
-# La tesi es diu un sol cop a la capçalera, no com a línia repetida per torn.
-check("la tesi apareix una sola vegada (capçalera)",
-      blob.count("decideix la posició") == 1)
+# La línia de tesi ("la IA emet l'acció · Python decideix la posició") s'ha
+# eliminat de la capçalera (millora de text): ja no ha d'aparèixer mai.
+check("la línia de tesi ja no apareix",
+      "decideix la posició" not in blob)
 
 print("\nTest 14 — render_inspector: parse fallit → ⚠ i avís")
 _stub.query_params._d = {}
@@ -427,6 +428,49 @@ cl2 = app._trailing_tutor_cluster(s)
 check("després d'un 2n torn, el clúster torna a ser curt (1)", len(cl2) == 1)
 check("display complet conservat a l'estat (historial intacte)",
       len(s["display"]) > len(cl2))
+
+
+# =============================================================================
+# build_session_record — el registre descarregable en mode docent
+# =============================================================================
+print("\nTest 22 — build_session_record: estructura i robustesa")
+import json as _json
+
+# Sessió real amb un torn complet, com el deixaria processa().
+s = tutor.new_session()
+s["history"].append({
+    "position_before": {"capitol": 1, "pas": 1},
+    "action": "advance",
+    "diagnostic": None,
+    "transition": "seguent_pas",
+    "control_parse_ok": True,
+    "n_api_calls": 1,
+    "reply": "Molt bé!",
+    "source": "ai",
+    "raw_output": "Molt bé!\n---CONTROL---\n{\"action\":\"advance\"}",
+})
+rec = app.build_session_record(s)
+check("té les tres seccions",
+      set(rec.keys()) == {"meta", "conversa", "contracte_per_torn"})
+check("meta porta el capítol actual", rec["meta"]["capitol_actual"] == 1)
+check("conversa reflecteix el display",
+      len(rec["conversa"]) == len(s["display"]))
+check("contracte porta el torn", len(rec["contracte_per_torn"]) == 1)
+check("el contracte conserva el raw_output",
+      "---CONTROL---" in rec["contracte_per_torn"][0]["raw_output"])
+# Serialitzable a JSON sense petar (cap objecte no-serialitzable a l'estat).
+try:
+    blob = _json.dumps(rec, ensure_ascii=False)
+    _json.loads(blob)
+    check("serialitza i parseja com a JSON", True)
+except (TypeError, ValueError) as e:
+    check("serialitza i parseja com a JSON", False, str(e))
+# Robust amb estat parcial (el que rep render_inspector sense torns).
+try:
+    rec_buit = app.build_session_record({"history": []})
+    check("no peta amb estat parcial", rec_buit["meta"]["capitol_actual"] is None)
+except Exception as e:
+    check("no peta amb estat parcial", False, str(e))
 
 
 # =============================================================================
