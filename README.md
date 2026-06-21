@@ -32,7 +32,7 @@ Com funciona un torn:
 
 1. El model rep **la conversa del capítol com a `contents` multi-torn** de
    Gemini (no un text aplanat), amb un **marcador de posició**
-   (`[Posició actual: Capítol C de 5 · Pas P de N]`) anteposat a l'últim
+   (`[Posició actual: Capítol C de 4 · Pas P de N]`) anteposat a l'últim
    missatge de l'alumne com a font de veritat.
 2. El model respon amb **text natural per a l'alumne** + el separador
    literal `---CONTROL---` + un JSON `{"action": "stay"|"advance"}`.
@@ -88,8 +88,13 @@ Mode debug: afegeix `?debug=1` a la URL per veure l'estat intern, l'últim
 ## Tests
 
 ```bash
-python3 test_tutor.py   # ~instantani, sense clau d'API
+python3 test_tutor.py            # màquina d'estats, parseig, mode de reserva (~76 tests)
+python3 test_diagnostic.py       # Tasca 4: diagnòstic al control block (~26 tests)
+python3 test_enunciat_length.py  # guarda-raïls de longitud dels enunciats (~2 tests)
+python3 test_inspector.py        # capa de presentació + panell inspector docent (~79 tests)
 ```
+
+Cap requereix clau d'API (stubben les crides al model). Total: ~183 tests.
 
 ## Notes de robustesa (apreses dels projectes germans)
 
