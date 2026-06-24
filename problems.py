@@ -61,30 +61,18 @@ CAPITOLS = [
         "passos": [
             {
                 "id": "1.1",
-                "pregunta": "Quan divideixes 12 entre 3, quin resultat obtens?",
-                "descripcio_pas": "Calcular 12÷3 i veure que és exacta.",
-                "resposta_ref": "12 ÷ 3 = 4. Surt rodó, és exacta.",
-                "conceptes_clau": ["4", "exacta"],
+                "pregunta": "Fes les dues divisions: **12 ÷ 3** i **3 ÷ 12**. Quina surt exacta (sencera) i quina no?",
+                "descripcio_pas": "Calcular 12÷3 (=4, exacta) i 3÷12 (=0,25, no exacta) i veure que només una surt sencera.",
+                "resposta_ref": "12 ÷ 3 = 4, és exacta. 3 ÷ 12 = 0,25, no és exacta.",
+                "conceptes_clau": ["4", "exacta", "0,25", "no exacta"],
                 "typical_error_label": "MUL_div_inexacta",
                 "pistes": [
-                    "Reparteix 12 caramels en 3 bosses iguals. Quants en toca a cada bossa?",
-                    "12 ÷ 3 = 4. No en sobra cap, per això és exacta.",
+                    "Reparteix 12 caramels en 3 bosses: 12÷3=4, rodó. I 3 caramels per a 12 nens, en toca un sencer a cadascú?",
+                    "12 ÷ 3 = 4 (exacta). 3 ÷ 12 = 0,25 (no és sencer, no és exacta).",
                 ],
             },
             {
                 "id": "1.2",
-                "pregunta": "Ara fes **3 ÷ 12**. Et surt un nombre sencer?",
-                "descripcio_pas": "Veure que 3÷12 no és exacta.",
-                "resposta_ref": "3 ÷ 12 = 0,25. No és sencer, no és exacta.",
-                "conceptes_clau": ["no", "0,25", "no exacta"],
-                "typical_error_label": "MUL_div_inexacta",
-                "pistes": [
-                    "Vols donar 3 caramels a 12 nens. Arriba a tocar-ne un sencer a cadascú?",
-                    "3 ÷ 12 = 0,25. Com que no és sencer, no és exacta.",
-                ],
-            },
-            {
-                "id": "1.3",
                 "pregunta": "El **12 és múltiple del 3**? (Pista: mira quina divisió surt exacta.)",
                 "descripcio_pas": "Aplicar la definició: A és múltiple de B si A÷B és exacta.",
                 "resposta_ref": (
@@ -205,38 +193,8 @@ CAPITOLS = [
         "passos": [
             {
                 "id": "3.1",
-                "pregunta": "Quins d'aquests nombres divideixen el 7 de manera exacta?\n\n{1, 2, 3, 4, 5, 6, 7}",
-                "descripcio_pas": "Triar els divisors del 7 de la llista (només 1 i 7).",
-                "resposta_ref": "Només l'1 i el 7. El 7 té 2 divisors.",
-                "conceptes_clau": ["1 i 7", "2 divisors", "dos"],
-                "typical_error_label": "DIV_exacta",
-                "pistes": [
-                    "Mira quins divideixen exacte el 7: 7÷1, 7÷2, 7÷3...",
-                    "Només 7÷1 i 7÷7 surten exactes. Per tant: 1 i 7.",
-                ],
-            },
-            {
-                "id": "3.2",
-                "pregunta": "Ara els divisors del 12. Quins nombres el divideixen exacte, entre aquests?\n\n{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}",
-                "descripcio_pas": "Trobar els divisors del 12 (en té 6).",
-                "resposta_ref": "1, 2, 3, 4, 6 i 12. El 12 té 6 divisors.",
-                "conceptes_clau": ["1 2 3 4 6 12", "6 divisors", "sis"],
-                "typical_error_label": "DIV_compta_malament",
-                "pistes": [
-                    "Prova 12÷1, 12÷2, 12÷3, 12÷4, 12÷6, 12÷12.",
-                    "Surten: 1, 2, 3, 4, 6, 12. Són sis.",
-                ],
-                "pistes_per_error": {
-                    "DIV_compta_malament": (
-                        "Ves un per un de l'1 al 12 i queda't només els que "
-                        "divideixen exacte. No t'oblidis de l'1 ni del 12."
-                    ),
-                },
-            },
-            {
-                "id": "3.3",
-                "pregunta": "Qui té **més divisors**, el 7 o el 12?",
-                "descripcio_pas": "Comparar la quantitat de divisors.",
+                "pregunta": "El 7 es divideix exacte només per 1 i 7 (2 divisors). El 12, per 1, 2, 3, 4, 6 i 12 (6 divisors). Qui té **més divisors**?",
+                "descripcio_pas": "Comparar la quantitat de divisors: el 12 (6) en té més que el 7 (2).",
                 "resposta_ref": "El 12 (en té 6), molt més que el 7 (que en té 2).",
                 "conceptes_clau": ["12", "el 12"],
                 "typical_error_label": "GEN_other",
